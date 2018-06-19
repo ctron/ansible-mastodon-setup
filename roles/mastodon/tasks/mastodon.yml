@@ -1,0 +1,81 @@
+---
+
+- name: Clone mastodon
+  become: yes
+  become_user: mastodon
+  git:
+    repo: "{{ mastodon_repo }}"
+    version: "{{ mastodon_version }}"
+    dest: /home/mastodon/live
+
+- name: Install Gems
+  become: yes
+  become_user: mastodon
+  bundler:
+    chdir: /home/mastodon/live
+    executable: /usr/local/rbenv/shims/bundle
+    exclude_groups:
+     - development
+     - test
+    deployment_mode: yes
+
+- name: Install yarn dependencies
+  become: yes
+  become_user: mastodon
+  command: yarn install --pure-lockfile
+  args:
+    chdir: /home/mastodon/live
+
+- name: Copy mastodon config
+  template:
+    src: env.production.j2
+    dest: /home/mastodon/live/.env.production
+    owner: mastodon
+    group: mastodon
+    mode: 0600
+
+- name: Precompile assets
+  become: yes
+  become_user: mastodon
+  environment:
+    SAFETY_ASSURED: 1
+    RAILS_ENV: production
+  command: /usr/local/rbenv/shims/bundle exec rake assets:precompile
+  args:
+    chdir: /home/mastodon/live
+    creates: /home/mastodon/live/public/assets
+
+- name: Migrate database
+  become: yes
+  become_user: mastodon
+  environment:
+    RAILS_ENV: production
+  command: /usr/local/rbenv/shims/bundle exec rake db:migrate
+  args:
+    chdir: /home/mastodon/live
+
+- name: copy systemd files
+  action: copy src={{item}}.service dest=/etc/systemd/system/{{item}}.service
+  with_items:
+    - mastodon-sidekiq
+    - mastodon-streaming
+    - mastodon-web
+
+- name: systemd reload
+  systemd:
+    daemon_reload: yes
+
+- name: start systemd services
+  action: systemd name={{item}} enabled=yes state=started
+  with_items:
+    - mastodon-sidekiq
+    - mastodon-streaming
+    - mastodon-web
+
+- name: Add maston cleanup job
+  cron:
+    name: cleanup_mastodon
+    special_time: daily
+    user: mastodon
+    job: bash -c "RAILS_ENV=production cd /home/mastodon/live && /home/mastodon/.rbenv/shims/bundle exec rake mastodon:media:remove_remote"
+

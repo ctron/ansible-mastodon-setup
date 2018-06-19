@@ -1,0 +1,46 @@
+---
+
+- name: Remove default
+  file: name=/etc/nginx/sites-enabled/default state=absent
+
+- name: Create dhparams
+  openssl_dhparam:
+    path: /etc/ssl/private/dhparams.pem
+    size: 4096
+
+- name: Copy config
+  template:
+    src: mastodon.conf.j2
+    dest: /etc/nginx/sites-available/mastodon.conf
+
+- name: Enable config
+  file:
+    src: /etc/nginx/sites-available/mastodon.conf
+    dest: /etc/nginx/sites-enabled/mastodon.conf
+    state: link
+
+- name: Enable nginx
+  service:
+    name: nginx
+    enabled: yes
+
+- name: Stop for letsencrypt
+  service:
+    name: nginx
+    state: stopped
+
+- name: Create letsencrypt certificate
+  shell: letsencrypt certonly -n --standalone -m {{ letsencrypt_email }} --agree-tos -d {{ mastodon_public_hostname }}
+  args:
+    creates: /etc/letsencrypt/live/{{ mastodon_public_hostname }}
+
+- name: Start nginx again
+  service:
+    name: nginx
+    state: started
+
+- name: Add LE renewable job
+  cron:
+    name: renew_letsencrypt
+    special_time: weekly
+    job: letsencrypt --renew certonly -n --webroot -w /home/mastodon/live/public -m {{ letsencrypt_email }} --agree-tos -d {{ mastodon_public_hostname }} && systemctl reload nginx

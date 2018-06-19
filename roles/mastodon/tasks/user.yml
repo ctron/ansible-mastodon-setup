@@ -1,0 +1,14 @@
+---
+
+# create group
+
+- group:
+    name: mastodon
+
+# create user
+
+- user:
+    name: mastodon
+    group: mastodon
+    home: /home/mastodon
+    shell: /usr/sbin/nologin

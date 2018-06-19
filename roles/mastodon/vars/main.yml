@@ -1,0 +1,12 @@
+---
+rbenv:
+  env: system
+  version: v1.1.1
+  default_ruby: 2.5.1
+  rubies:
+  - version: 2.5.1
+
+mastodon_repo: https://github.com/tootsuite/mastodon.git
+mastodon_version: v2.4.2
+mastodon_email_sender: "mastodon@{{mastodon_domain}}"
+mastodon_smtp_user: "{{mastodon_email_sender}}"

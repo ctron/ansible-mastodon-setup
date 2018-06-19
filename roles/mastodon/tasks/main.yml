@@ -1,0 +1,19 @@
+---
+
+- name: Install pre-requisites
+  import_tasks: pre-reqs.yml
+
+- name: Create user
+  import_tasks: user.yml
+
+- name: Ruby
+  import_tasks: ruby.yml
+
+- name: Database
+  import_tasks: database.yml
+
+- name: NGINX
+  import_tasks: nginx.yml
+
+- name: Mastodon
+  import_tasks: mastodon.yml

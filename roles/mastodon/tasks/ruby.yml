@@ -1,0 +1,11 @@
+
+---
+
+- name: Install Ruby 2.5.1
+  include_role:
+    name: zzet.rbenv
+
+- name: Install bundler
+  command: gem install bundler
+  args:
+    creates: /usr/local/rbenv/shims/bundler

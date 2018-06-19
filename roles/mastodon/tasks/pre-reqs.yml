@@ -1,0 +1,74 @@
+---
+
+# add node repository key
+
+- name: add node repo key
+  apt_key:
+    url: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
+
+# register node repository
+
+- name: add node repository
+  apt_repository:
+    repo: deb https://deb.nodesource.com/node_6.x xenial main
+
+# add yarn repository key
+
+- name: add yarn repo key
+  apt_key:
+    url: https://dl.yarnpkg.com/debian/pubkey.gpg
+
+# register yarn repository
+
+- name: add yarn repository
+  apt_repository:
+    repo: deb https://dl.yarnpkg.com/debian stable main
+
+# update cache
+
+- name: update cache and distribution
+  apt:
+    update_cache: true
+    upgrade: dist
+
+# install packages
+
+- name: install dependencies
+  action: apt pkg={{item}} state=present
+  with_items:
+    - curl
+    - imagemagick
+    - ffmpeg
+    - libpq-dev
+    - libxml2-dev
+    - libxslt1-dev
+    - file
+    - git-core
+    - g++
+    - libprotobuf-dev
+    - protobuf-compiler
+    - pkg-config
+    - nodejs
+    - gcc
+    - autoconf
+    - bison
+    - build-essential
+    - libssl-dev
+    - libyaml-dev
+    - libreadline6-dev
+    - zlib1g-dev
+    - libncurses5-dev
+    - libffi-dev
+    - libgdbm3
+    - libgdbm-dev
+    - nginx
+    - redis-server
+    - redis-tools
+    - postgresql
+    - postgresql-contrib
+    - letsencrypt
+    - yarn
+    - libidn11-dev
+    - libicu-dev
+    - rbenv
+    - ruby-build
