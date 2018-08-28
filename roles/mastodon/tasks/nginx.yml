@@ -28,16 +28,19 @@
   service:
     name: nginx
     state: stopped
+  when: not mastodon_upgrade
 
 - name: Create letsencrypt certificate
   shell: letsencrypt certonly -n --standalone -m {{ letsencrypt_email }} --agree-tos -d {{ mastodon_public_hostname }}
   args:
     creates: /etc/letsencrypt/live/{{ mastodon_public_hostname }}
+  when: not mastodon_upgrade
 
 - name: Start nginx again
   service:
     name: nginx
     state: started
+  when: not mastodon_upgrade
 
 - name: Add LE renewable job
   cron:

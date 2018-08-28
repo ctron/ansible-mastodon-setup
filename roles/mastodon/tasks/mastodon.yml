@@ -71,6 +71,15 @@
     - mastodon-sidekiq
     - mastodon-streaming
     - mastodon-web
+  when: not mastodon_upgrade
+
+- name: restart systemd services
+  action: systemd name={{item}} enabled=yes state=restarted
+  with_items:
+    - mastodon-sidekiq
+    - mastodon-streaming
+    - mastodon-web
+  when: mastodon_upgrade
 
 - name: Add maston cleanup job
   cron:
