@@ -44,6 +44,18 @@
   args:
     chdir: /home/mastodon/live
     creates: /home/mastodon/live/public/assets
+  when: not mastodon_upgrade
+
+- name: Precompile assets
+  become: yes
+  become_user: mastodon
+  environment:
+    SAFETY_ASSURED: 1
+    RAILS_ENV: production
+  command: /usr/local/rbenv/shims/bundle exec rake assets:precompile
+  args:
+    chdir: /home/mastodon/live
+  when: mastodon_upgrade
 
 - name: Migrate database
   become: yes
