@@ -7,7 +7,7 @@ rbenv:
   - version: 2.5.1
 
 mastodon_repo: https://github.com/tootsuite/mastodon.git
-mastodon_version: v2.4.5
+mastodon_version: v2.5.0
 mastodon_email_sender: "mastodon@{{mastodon_domain}}"
 mastodon_smtp_user: "{{mastodon_email_sender}}"
 mastodon_upgrade: false
