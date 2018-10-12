@@ -40,5 +40,5 @@ otp_secret: 1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234
 
 ## Doing an upgrade
 
-  * Switch to the new version in `roles/mastodon/vars/main.yml`
+  * Switch to the new version in `roles/mastodon/defaults/main.yml`
   * Run the ansible update playbook: `ansible-playbook -u root -i inventory.txt --extra-vars=@extra-vars.yml update.yml`
