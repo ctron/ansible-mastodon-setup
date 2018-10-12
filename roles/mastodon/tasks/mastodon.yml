@@ -34,7 +34,15 @@
     group: mastodon
     mode: 0600
 
-- name: Precompile assets
+- name: Stop systemd services
+  action: systemd name={{item}} enabled=yes state=stopped
+  with_items:
+    - mastodon-sidekiq
+    - mastodon-streaming
+    - mastodon-web
+  when: mastodon_upgrade
+
+- name: Precompile assets after initial installation
   become: yes
   become_user: mastodon
   environment:
@@ -46,7 +54,7 @@
     creates: /home/mastodon/live/public/assets
   when: not mastodon_upgrade
 
-- name: Precompile assets
+- name: Precompile assets after update
   become: yes
   become_user: mastodon
   environment:
@@ -83,15 +91,6 @@
     - mastodon-sidekiq
     - mastodon-streaming
     - mastodon-web
-  when: not mastodon_upgrade
-
-- name: restart systemd services
-  action: systemd name={{item}} enabled=yes state=restarted
-  with_items:
-    - mastodon-sidekiq
-    - mastodon-streaming
-    - mastodon-web
-  when: mastodon_upgrade
 
 - name: Add maston cleanup job
   cron:
