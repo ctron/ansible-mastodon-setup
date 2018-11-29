@@ -1,7 +1,7 @@
 
 ---
 
-- name: Install Ruby 2.5.1
+- name: Install Ruby
   include_role:
     name: zzet.rbenv
 
