@@ -4,6 +4,13 @@
 - name: Install Ruby
   include_role:
     name: zzet.rbenv
+  vars:
+    rbenv:
+      env: system
+      version: v1.1.1
+      default_ruby: 2.6.0
+      rubies:
+      - version: 2.6.0
 
 - name: Install bundler
   command: gem install bundler

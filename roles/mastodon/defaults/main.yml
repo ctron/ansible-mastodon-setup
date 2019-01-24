@@ -1,13 +1,7 @@
 ---
-rbenv:
-  env: system
-  version: v1.1.1
-  default_ruby: 2.5.3
-  rubies:
-  - version: 2.5.3
 
 mastodon_repo: https://github.com/tootsuite/mastodon.git
-mastodon_version: v2.6.2
+mastodon_version: v2.7.0
 mastodon_email_sender: "mastodon@{{mastodon_domain}}"
 mastodon_smtp_user: "{{mastodon_email_sender}}"
 mastodon_upgrade: false
