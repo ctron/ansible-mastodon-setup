@@ -8,6 +8,14 @@
     version: "{{ mastodon_version }}"
     dest: /home/mastodon/live
 
+- name: Stop systemd services
+  action: systemd name={{item}} enabled=yes state=stopped
+  with_items:
+    - mastodon-sidekiq
+    - mastodon-streaming
+    - mastodon-web
+  when: mastodon_upgrade
+
 - name: Install Gems
   become: yes
   become_user: mastodon
@@ -33,14 +41,6 @@
     owner: mastodon
     group: mastodon
     mode: 0600
-
-- name: Stop systemd services
-  action: systemd name={{item}} enabled=yes state=stopped
-  with_items:
-    - mastodon-sidekiq
-    - mastodon-streaming
-    - mastodon-web
-  when: mastodon_upgrade
 
 - name: Precompile assets after initial installation
   become: yes
