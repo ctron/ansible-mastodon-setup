@@ -38,7 +38,7 @@ otp_secret: 1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234
     cd ~/live
     RAILS_ENV=production bundle exec rake mastodon:add_user
 
-## Doing an upgrade
+## Performing an upgrade
 
   * Switch to the new version in `roles/mastodon/defaults/main.yml`
   * And then run the ansible update playbook
