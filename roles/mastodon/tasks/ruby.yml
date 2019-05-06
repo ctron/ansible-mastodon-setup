@@ -7,10 +7,10 @@
   vars:
     rbenv:
       env: system
-      version: v1.1.1
-      default_ruby: 2.6.0
+      version: v1.1.2
+      default_ruby: 2.6.1
       rubies:
-      - version: 2.6.0
+      - version: 2.6.1
 
 - name: Install bundler
   command: gem install bundler
