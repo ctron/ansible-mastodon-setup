@@ -28,22 +28,29 @@
   service:
     name: nginx
     state: stopped
-  when: not mastodon_upgrade
+  when: not mastodon_upgrade|bool
 
 - name: Create letsencrypt certificate
   shell: letsencrypt certonly -n --standalone -m {{ letsencrypt_email }} --agree-tos -d {{ mastodon_public_hostname }}
   args:
     creates: /etc/letsencrypt/live/{{ mastodon_public_hostname }}
-  when: not mastodon_upgrade
+  when: not mastodon_upgrade|bool
 
 - name: Start nginx again
   service:
     name: nginx
     state: started
-  when: not mastodon_upgrade
+  when: not mastodon_upgrade|bool
 
-- name: Add LE renewable job
+- name: Disable (legacy) LE cron job
   cron:
     name: renew_letsencrypt
     special_time: weekly
     job: letsencrypt --renew certonly -n --webroot -w /home/mastodon/live/public -m {{ letsencrypt_email }} --agree-tos -d {{ mastodon_public_hostname }} && systemctl reload nginx
+    state: absent # remove legacy job
+
+- name: Add certbot post hook
+  copy:
+    src: reload-nginx
+    dest: /etc/letsencrypt/renewal-hooks/post/reload-nginx
+    mode: 0755

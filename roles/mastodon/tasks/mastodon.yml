@@ -14,7 +14,7 @@
     - mastodon-sidekiq
     - mastodon-streaming
     - mastodon-web
-  when: mastodon_upgrade
+  when: mastodon_upgrade|bool
 
 - name: Install Gems
   become: yes
@@ -52,7 +52,7 @@
   args:
     chdir: /home/mastodon/live
     creates: /home/mastodon/live/public/assets
-  when: not mastodon_upgrade
+  when: not mastodon_upgrade|bool
 
 - name: Precompile assets after update
   become: yes
@@ -63,7 +63,7 @@
   command: /usr/local/rbenv/shims/bundle exec rake assets:precompile
   args:
     chdir: /home/mastodon/live
-  when: mastodon_upgrade
+  when: mastodon_upgrade|bool
 
 - name: Migrate database
   become: yes

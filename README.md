@@ -44,3 +44,4 @@ otp_secret: 1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234
   * And then run the ansible update playbook
   
         ansible-playbook -u root -i inventory.txt --extra-vars=@extra-vars.yml update.yml
+
