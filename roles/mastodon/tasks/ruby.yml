@@ -8,9 +8,9 @@
     rbenv:
       env: system
       version: v1.1.2
-      default_ruby: 2.6.1
+      default_ruby: 2.6.5
       rubies:
-      - version: 2.6.1
+      - version: 2.6.5
 
 - name: Install bundler
   command: gem install bundler
