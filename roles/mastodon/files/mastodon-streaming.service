@@ -8,7 +8,8 @@ User=mastodon
 WorkingDirectory=/home/mastodon/live
 Environment="NODE_ENV=production"
 Environment="PORT=4000"
-ExecStart=/usr/bin/npm run start
+Environment="STREAMING_CLUSTER_NUM=1"
+ExecStart=/usr/bin/node ./streaming
 TimeoutSec=15
 Restart=always
 

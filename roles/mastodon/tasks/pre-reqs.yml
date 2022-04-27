@@ -10,7 +10,7 @@
 
 - name: add node repository
   apt_repository:
-    repo: deb https://deb.nodesource.com/node_8.x xenial main
+    repo: deb https://deb.nodesource.com/node_16.x focal main
 
 # add yarn repository key
 
@@ -23,6 +23,18 @@
 - name: add yarn repository
   apt_repository:
     repo: deb https://dl.yarnpkg.com/debian stable main
+
+# add postgres repository key
+
+- name: add postgres repo key
+  apt_key:
+    url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+
+# add postgres repository
+
+- name: add postgres repository
+  apt_repository:
+    repo: deb https://apt.postgresql.org/pub/repos/apt focal-pgdg main
 
 # update cache
 
@@ -37,6 +49,7 @@
   apt:
     state: present
     pkg:
+    - python3-psycopg2
     - curl
     - imagemagick
     - ffmpeg
@@ -60,16 +73,14 @@
     - zlib1g-dev
     - libncurses5-dev
     - libffi-dev
-    - libgdbm3
     - libgdbm-dev
     - nginx
     - redis-server
     - redis-tools
     - postgresql
     - postgresql-contrib
-    - letsencrypt
+    - certbot
     - yarn
     - libidn11-dev
     - libicu-dev
-    - rbenv
-    - ruby-build
+    - libjemalloc-dev

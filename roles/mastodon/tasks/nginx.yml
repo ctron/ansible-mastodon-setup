@@ -31,7 +31,7 @@
   when: not mastodon_upgrade|bool
 
 - name: Create letsencrypt certificate
-  shell: letsencrypt certonly -n --standalone -m {{ letsencrypt_email }} --agree-tos -d {{ mastodon_public_hostname }}
+  shell: certbot certonly -n --standalone -m {{ letsencrypt_email }} --agree-tos -d {{ mastodon_public_hostname }}
   args:
     creates: /etc/letsencrypt/live/{{ mastodon_public_hostname }}
   when: not mastodon_upgrade|bool
@@ -43,6 +43,7 @@
   when: not mastodon_upgrade|bool
 
 - name: Disable (legacy) LE cron job
+  # Is done now by a systemd timer, installed using the certbot package
   cron:
     name: renew_letsencrypt
     special_time: weekly

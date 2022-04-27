@@ -92,10 +92,24 @@
     - mastodon-streaming
     - mastodon-web
 
-- name: Add maston cleanup job
+- name: Drop old mastodon cleanup job
   cron:
     name: cleanup_mastodon
     special_time: daily
     user: mastodon
     job: bash -c "RAILS_ENV=production cd /home/mastodon/live && /home/mastodon/.rbenv/shims/bundle exec rake mastodon:media:remove_remote"
+    state: absent
 
+- name: Mastodon cleanup job (media remove)
+  cron:
+    name: mastodon_media_remove
+    special_time: weekly
+    user: mastodon
+    job: env RAILS_ENV=production /home/mastodon/live/bin/tootctl media remove
+
+- name: Mastodon cleanup job (preview_cards remove)
+  cron:
+    name: mastodon_preview_cards_remove
+    special_time: weekly
+    user: mastodon
+    job: env RAILS_ENV=production /home/mastodon/live/bin/tootctl preview_cards remove
