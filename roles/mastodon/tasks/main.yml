@@ -17,3 +17,6 @@
 
 - name: Mastodon
   import_tasks: mastodon.yml
+
+- name: Firewall
+  import_tasks: firewall.yml

@@ -1,0 +1,27 @@
+---
+
+- name: Allow everything and enable UFW
+  ufw:
+    state: enabled
+    policy: allow
+
+- ufw:
+    rule: allow
+    name: OpenSSH
+
+- ufw:
+    rule: limit
+    port: ssh
+    proto: tcp
+
+- name: Allow all access to tcp port 80
+  ufw:
+    rule: allow
+    port: '80'
+    proto: tcp
+
+- name: Allow all access to tcp port 80
+  ufw:
+    rule: allow
+    port: '443'
+    proto: tcp
