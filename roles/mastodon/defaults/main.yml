@@ -1,7 +1,7 @@
 ---
 
 mastodon_repo: https://github.com/tootsuite/mastodon.git
-mastodon_version: v3.5.1
+mastodon_version: v3.5.2
 mastodon_email_sender: "mastodon@{{mastodon_domain}}"
 mastodon_smtp_user: "{{mastodon_email_sender}}"
 mastodon_upgrade: false
