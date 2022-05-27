@@ -86,5 +86,11 @@ env RAILS_ENV=production bin/tootctl accounts create \
   * And then run the ansible update playbook
   
     ```shell
-    ansible-playbook -u root -i inventory.ini --extra-vars=@extra-vars.yml update.yml 
+    ansible-playbook -u root -i inventory.ini --extra-vars=@extra-vars.yaml ansible-mastodon-setup/update.yml 
+    ```
+    
+    Or:
+
+    ```shell
+    ansible-playbook -u root -i ../inventory.ini --extra-vars=@../extra-vars.yaml update.yml 
     ```
