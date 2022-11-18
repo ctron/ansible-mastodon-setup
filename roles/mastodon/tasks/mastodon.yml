@@ -42,6 +42,17 @@
     group: mastodon
     mode: 0600
 
+- name: Migrate database (pre-deployment)
+  when: mastodon_upgrade|bool
+  become: yes
+  become_user: mastodon
+  environment:
+    SKIP_POST_DEPLOYMENT_MIGRATIONS: true
+    RAILS_ENV: production
+  command: /usr/local/rbenv/shims/bundle exec rake db:migrate
+  args:
+    chdir: /home/mastodon/live
+
 - name: Precompile assets after initial installation
   become: yes
   become_user: mastodon
