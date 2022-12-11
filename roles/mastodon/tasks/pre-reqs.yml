@@ -10,7 +10,7 @@
 
 - name: add node repository
   apt_repository:
-    repo: deb https://deb.nodesource.com/node_16.x focal main
+    repo: deb https://deb.nodesource.com/node_16.x jammy main
 
 # add yarn repository key
 
@@ -34,7 +34,7 @@
 
 - name: add postgres repository
   apt_repository:
-    repo: deb https://apt.postgresql.org/pub/repos/apt focal-pgdg main
+    repo: deb https://apt.postgresql.org/pub/repos/apt jammy-pgdg main
 
 # update cache
 
