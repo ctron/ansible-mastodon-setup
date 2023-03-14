@@ -114,13 +114,20 @@
 - name: Mastodon cleanup job (media remove)
   cron:
     name: mastodon_media_remove
-    special_time: weekly
+    special_time: daily
     user: mastodon
     job: env PATH=$PATH:/usr/local/rbenv/shims RAILS_ENV=production /home/mastodon/live/bin/tootctl media remove
+
+- name: Mastodon cleanup job (prune profiles)
+  cron:
+    name: mastodon_media_remove
+    special_time: daily
+    user: mastodon
+    job: env PATH=$PATH:/usr/local/rbenv/shims RAILS_ENV=production /home/mastodon/live/bin/tootctl media remove --prune-profiles
 
 - name: Mastodon cleanup job (preview_cards remove)
   cron:
     name: mastodon_preview_cards_remove
-    special_time: weekly
+    special_time: daily
     user: mastodon
     job: env PATH=$PATH:/usr/local/rbenv/shims RAILS_ENV=production /home/mastodon/live/bin/tootctl preview_cards remove
