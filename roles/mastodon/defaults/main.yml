@@ -7,4 +7,4 @@ mastodon_smtp_user: "{{mastodon_email_sender}}"
 mastodon_upgrade: false
 
 # must be aligned with the version required by mastodon
-ruby_version: 3.0.4
+ruby_version: 3.0.5
