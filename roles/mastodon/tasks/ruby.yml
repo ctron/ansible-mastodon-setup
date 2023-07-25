@@ -3,7 +3,7 @@
 
 - name: Install Ruby
   include_role:
-    name: zzet.rbenv
+    name: galaxy/rbenv
   vars:
     rbenv:
       env: system

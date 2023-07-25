@@ -1,9 +1,9 @@
 # Ansible Mastodon setup
 
-In order to fetch dependencies for Ansible you need to run:
+In order to fetch dependencies for Ansible you need to run (also after updating the repository):
 
 ```shell
-ansible-galaxy install zzet.rbenv
+make roles
 ```
 
 Create an inventory file (`inventory.ini`):
