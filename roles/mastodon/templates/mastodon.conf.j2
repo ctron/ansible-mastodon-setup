@@ -18,7 +18,6 @@ server {
   listen [::]:80;
   server_name {{ mastodon_public_hostname }};
   root /home/mastodon/live/public;
-
   location /.well-known/acme-challenge/ { allow all; }
   location / { return 301 https://$host$request_uri; }
 }
