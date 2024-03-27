@@ -1,5 +1,5 @@
 mastodon_repo: https://github.com/mastodon/mastodon.git
-mastodon_version: v4.2.7
+mastodon_version: v4.2.8
 mastodon_email_sender: "mastodon@{{mastodon_domain}}"
 mastodon_smtp_user: "{{mastodon_email_sender}}"
 mastodon_upgrade: false
