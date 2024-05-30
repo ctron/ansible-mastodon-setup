@@ -3,8 +3,8 @@
 - hosts: all
 
   vars:
-    - mastodon_domain: "{{mastodon_public_hostname}}"
-    - mastodon_upgrade: true
+    mastodon_domain: "{{mastodon_public_hostname}}"
+    mastodon_upgrade: true
 
   roles:
     - mastodon
