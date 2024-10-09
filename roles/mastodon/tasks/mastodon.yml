@@ -30,7 +30,7 @@
 - name: Install yarn dependencies
   become: yes
   become_user: mastodon
-  command: yarn install --pure-lockfile
+  command: yarn install --immutable --check-cache
   args:
     chdir: /home/mastodon/live
 
@@ -49,6 +49,9 @@
   environment:
     SKIP_POST_DEPLOYMENT_MIGRATIONS: true
     RAILS_ENV: production
+    ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY: "{{ active_record_encryption.primary_key }}"
+    ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY: "{{ active_record_encryption.deterministic_key }}"
+    ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT: "{{ active_record_encryption.key_derivation_salt }}"
   command: /usr/local/rbenv/shims/bundle exec rake db:migrate
   args:
     chdir: /home/mastodon/live
@@ -59,6 +62,9 @@
   environment:
     SAFETY_ASSURED: 1
     RAILS_ENV: production
+    ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY: "{{ active_record_encryption.primary_key }}"
+    ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY: "{{ active_record_encryption.deterministic_key }}"
+    ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT: "{{ active_record_encryption.key_derivation_salt }}"
   command: /usr/local/rbenv/shims/bundle exec rake assets:precompile
   args:
     chdir: /home/mastodon/live
@@ -71,6 +77,9 @@
   environment:
     SAFETY_ASSURED: 1
     RAILS_ENV: production
+    ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY: "{{ active_record_encryption.primary_key }}"
+    ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY: "{{ active_record_encryption.deterministic_key }}"
+    ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT: "{{ active_record_encryption.key_derivation_salt }}"
   command: /usr/local/rbenv/shims/bundle exec rake assets:precompile
   args:
     chdir: /home/mastodon/live
@@ -81,6 +90,9 @@
   become_user: mastodon
   environment:
     RAILS_ENV: production
+    ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY: "{{ active_record_encryption.primary_key }}"
+    ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY: "{{ active_record_encryption.deterministic_key }}"
+    ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT: "{{ active_record_encryption.key_derivation_salt }}"
   command: /usr/local/rbenv/shims/bundle exec rake db:migrate
   args:
     chdir: /home/mastodon/live

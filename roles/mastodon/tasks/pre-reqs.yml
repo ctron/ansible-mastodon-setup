@@ -10,19 +10,21 @@
 
 - name: add node repository
   apt_repository:
-    repo: deb https://deb.nodesource.com/node_16.x jammy main
+    repo: deb https://deb.nodesource.com/node_20.x jammy main
 
 # add yarn repository key
 
-- name: add yarn repo key
+- name: remove yarn repo key
   apt_key:
-    url: https://dl.yarnpkg.com/debian/pubkey.gpg
+    id: "72ECF46A56B4AD39C907BBB71646B01B86E50310"
+    state: absent
 
 # register yarn repository
 
-- name: add yarn repository
+- name: remove yarn repository
   apt_repository:
     repo: deb https://dl.yarnpkg.com/debian stable main
+    state: absent
 
 # add postgres repository key
 
@@ -42,6 +44,19 @@
   apt:
     update_cache: true
     upgrade: dist
+
+# remove classic yarn
+- name: remove classic yarn
+  apt:
+    state: absent
+    pkg:
+      - yarn
+
+- name: remove classic yarn (npm)
+  community.general.npm:
+    name: yarn
+    global: true
+    state: absent
 
 # install packages
 
@@ -80,7 +95,9 @@
     - postgresql
     - postgresql-contrib
     - certbot
-    - yarn
     - libidn11-dev
     - libicu-dev
     - libjemalloc-dev
+
+- name: enable corepack
+  ansible.builtin.command: corepack enable

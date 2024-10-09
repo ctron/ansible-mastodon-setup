@@ -6,6 +6,7 @@ help: ## Show this help.
 roles: ## Pull roles
 	rm -rf roles/galaxy
 	ansible-galaxy install -r requirements.yml -p roles/galaxy/ --force
+	ansible-galaxy collection install community.general
 
 lint: ## Runs ansible-lint against all roles in the playbook
 	ansible-lint roles/custom

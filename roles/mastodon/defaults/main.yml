@@ -1,9 +1,9 @@
 mastodon_repo: https://github.com/mastodon/mastodon.git
-mastodon_version: v4.2.13
+mastodon_version: v4.3.0
 mastodon_email_sender: "mastodon@{{mastodon_domain}}"
 mastodon_smtp_user: "{{mastodon_email_sender}}"
 mastodon_upgrade: false
 
 # must be aligned with the version required by mastodon.
 # Check: /.ruby-version in git
-ruby_version: 3.2.3
+ruby_version: 3.3.5
