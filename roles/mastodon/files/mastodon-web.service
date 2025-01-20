@@ -9,9 +9,6 @@ WorkingDirectory=/home/mastodon/live
 Environment="RAILS_ENV=production"
 Environment="PORT=3000"
 Environment="LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.2"
-Environment="ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY={{ active_record_encryption.primary_key }}"
-Environment="ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY={{ active_record_encryption.deterministic_key }}"
-Environment="ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT={{ active_record_encryption.key_derivation_salt }}"
 ExecStart=/usr/local/rbenv/shims/bundle exec puma -C config/puma.rb
 ExecReload=/bin/kill -SIGUSR1 $MAINPID
 TimeoutSec=15
