@@ -27,6 +27,13 @@
      - test
     deployment_mode: yes
 
+- name: Ensure corepack is ready
+  become: yes
+  become_user: mastodon
+  command: corepack yarn install
+  args:
+    chdir: /home/mastodon/live
+
 - name: Install yarn dependencies
   become: yes
   become_user: mastodon

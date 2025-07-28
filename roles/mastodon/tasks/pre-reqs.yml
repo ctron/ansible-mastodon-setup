@@ -4,13 +4,23 @@
 
 - name: add node repo key
   apt_key:
-    url: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
+    url: https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key
 
 # register node repository
 
-- name: add node repository
+- name: remove node repository (16.x)
   apt_repository:
+    state: absent
+    repo: deb https://deb.nodesource.com/node_16.x jammy main
+
+- name: remove node repository (20.x, jammy)
+  apt_repository:
+    state: absent
     repo: deb https://deb.nodesource.com/node_20.x jammy main
+
+- name: add node repository (22.x)
+  apt_repository:
+    repo: deb https://deb.nodesource.com/node_22.x nodistro main
 
 # add yarn repository key
 
@@ -34,9 +44,14 @@
 
 # add postgres repository
 
-- name: add postgres repository
+- name: remove postgres repository (jammy)
   apt_repository:
+    state: absent
     repo: deb https://apt.postgresql.org/pub/repos/apt jammy-pgdg main
+
+- name: add postgres repository (noble)
+  apt_repository:
+    repo: deb https://apt.postgresql.org/pub/repos/apt noble-pgdg main
 
 # update cache
 
@@ -51,12 +66,6 @@
     state: absent
     pkg:
       - yarn
-
-- name: remove classic yarn (npm)
-  community.general.npm:
-    name: yarn
-    global: true
-    state: absent
 
 # install packages
 
@@ -98,6 +107,13 @@
     - libidn11-dev
     - libicu-dev
     - libjemalloc-dev
+    - libvips-tools
 
 - name: enable corepack
   ansible.builtin.command: corepack enable
+
+- name: remove classic yarn (npm)
+  community.general.npm:
+    name: yarn
+    global: true
+    state: absent
