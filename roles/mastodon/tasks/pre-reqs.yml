@@ -74,6 +74,11 @@
 
 # install packages
 
+- name: Upgrade the OS (apt-get dist-upgrade)
+  ansible.builtin.apt:
+    upgrade: dist
+    update_cache: yes
+
 - name: install dependencies
   apt:
     state: present
