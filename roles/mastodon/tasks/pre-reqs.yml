@@ -18,9 +18,14 @@
     state: absent
     repo: deb https://deb.nodesource.com/node_20.x jammy main
 
-- name: add node repository (22.x)
+- name: remove node repository (22.x)
   apt_repository:
+    state: absent
     repo: deb https://deb.nodesource.com/node_22.x nodistro main
+
+- name: add node repository (24.x)
+  apt_repository:
+    repo: deb https://deb.nodesource.com/node_24.x nodistro main
 
 # add yarn repository key
 
