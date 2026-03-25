@@ -83,14 +83,14 @@ env RAILS_ENV=production bin/tootctl accounts create \
 ## Performing an upgrade
 
   * Switch to the new version in `roles/mastodon/defaults/main.yml`
-  * And then run the ansible update playbook
-  
+  * And then run the install playbook again
+
     ```shell
-    ansible-playbook -u root -i inventory.ini --extra-vars=@extra-vars.yaml ansible-mastodon-setup/update.yml 
+    ansible-playbook -u root -i inventory.ini --extra-vars=@extra-vars.yaml ansible-mastodon-setup/install.yml
     ```
-    
+
     Or:
 
     ```shell
-    ansible-playbook -u root -i ../inventory.ini --extra-vars=@../extra-vars.yaml update.yml 
+    ansible-playbook -u root -i ../inventory.ini --extra-vars=@../extra-vars.yaml install.yml
     ```
