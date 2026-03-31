@@ -6,4 +6,4 @@ mastodon_upgrade: false
 
 # must be aligned with the version required by mastodon.
 # Check: /.ruby-version in git
-ruby_version: 3.4.7
+ruby_version: 3.4.9
