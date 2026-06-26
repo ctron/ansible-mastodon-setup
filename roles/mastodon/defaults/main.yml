@@ -1,5 +1,5 @@
 mastodon_repo: https://github.com/mastodon/mastodon.git
-mastodon_version: v4.5.8
+mastodon_version: v4.6.2
 mastodon_email_sender: "mastodon@{{mastodon_domain}}"
 mastodon_smtp_user: "{{mastodon_email_sender}}"
 # Auto-detect upgrades from an existing checkout unless explicitly overridden.
@@ -7,4 +7,4 @@ mastodon_upgrade:
 
 # must be aligned with the version required by mastodon.
 # Check: /.ruby-version in git
-ruby_version: 3.4.9
+ruby_version: 4.0.5
