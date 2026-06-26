@@ -7,7 +7,10 @@
 
 - name: Determine whether this run is an upgrade
   set_fact:
-    mastodon_is_upgrade: "{{ mastodon_upgrade | default(mastodon_checkout.stat.exists) | bool }}"
+    mastodon_is_upgrade: >-
+      {{ (mastodon_upgrade
+          if mastodon_upgrade is not none
+          else mastodon_checkout.stat.exists) | bool }}
 
 - name: Install pre-requisites
   import_tasks: pre-reqs.yml
