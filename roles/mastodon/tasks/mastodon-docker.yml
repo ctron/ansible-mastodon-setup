@@ -1,0 +1,40 @@
+---
+
+- name: Pull Mastodon Docker images
+  command: docker compose pull
+  args:
+    chdir: "{{ mastodon_compose_dir }}"
+
+- name: Run Mastodon database migrations
+  command: docker compose run --rm web bundle exec rails db:migrate
+  args:
+    chdir: "{{ mastodon_compose_dir }}"
+  when: mastodon_postgres_enabled | bool
+  register: mastodon_db_migrate
+  changed_when: "'Migrating' in mastodon_db_migrate.stdout or 'migrated' in mastodon_db_migrate.stdout"
+
+- name: Start Mastodon Docker stack
+  community.docker.docker_compose_v2:
+    project_src: "{{ mastodon_compose_dir }}"
+    state: present
+
+- name: Mastodon cleanup job (media remove)
+  cron:
+    name: mastodon_media_remove
+    special_time: daily
+    user: root
+    job: cd {{ mastodon_compose_dir }} && docker compose run --rm --no-deps web bin/tootctl media remove
+
+- name: Mastodon cleanup job (prune profiles)
+  cron:
+    name: mastodon_prune_profiles
+    special_time: daily
+    user: root
+    job: cd {{ mastodon_compose_dir }} && docker compose run --rm --no-deps web bin/tootctl media remove --prune-profiles
+
+- name: Mastodon cleanup job (preview_cards remove)
+  cron:
+    name: mastodon_preview_cards_remove
+    special_time: daily
+    user: root
+    job: cd {{ mastodon_compose_dir }} && docker compose run --rm --no-deps web bin/tootctl preview_cards remove

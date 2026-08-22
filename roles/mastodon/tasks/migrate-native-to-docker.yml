@@ -1,0 +1,125 @@
+---
+
+- name: Stop native Mastodon services
+  service:
+    name: "{{ item }}"
+    state: stopped
+    enabled: false
+  loop:
+    - mastodon-sidekiq
+    - mastodon-streaming
+    - mastodon-web
+  failed_when: false
+
+- name: Check existing native database dump
+  stat:
+    path: "{{ mastodon_backup_dir }}/mastodon-native.dump"
+  register: mastodon_native_database_dump
+  when: mastodon_postgres_enabled | bool
+
+- name: Remove temporary native database dump
+  file:
+    path: /tmp/mastodon-native.dump
+    state: absent
+  when:
+    - mastodon_postgres_enabled | bool
+    - not (mastodon_reuse_native_database_dump | bool)
+
+- name: Create native database dump
+  become: true
+  become_user: postgres
+  command: pg_dump -Fc mastodon -f /tmp/mastodon-native.dump
+  when:
+    - mastodon_postgres_enabled | bool
+    - not (mastodon_reuse_native_database_dump | bool) or not mastodon_native_database_dump.stat.exists
+
+- name: Store native database dump
+  copy:
+    remote_src: true
+    src: /tmp/mastodon-native.dump
+    dest: "{{ mastodon_backup_dir }}/mastodon-native.dump"
+    owner: root
+    group: root
+    mode: "0600"
+  when:
+    - mastodon_postgres_enabled | bool
+    - not (mastodon_reuse_native_database_dump | bool) or not mastodon_native_database_dump.stat.exists
+
+- name: Check native Mastodon media directory
+  stat:
+    path: /home/mastodon/live/public/system
+  register: mastodon_native_system_dir
+
+- name: Copy native Mastodon media
+  command: "rsync -a --chown={{ mastodon_container_uid }}:{{ mastodon_container_gid }} /home/mastodon/live/public/system/ {{ mastodon_system_dir }}/"
+  args:
+    creates: "{{ mastodon_system_dir }}/.migration-copy-complete"
+  when: mastodon_native_system_dir.stat.exists
+
+- name: Mark media copy complete
+  file:
+    path: "{{ mastodon_system_dir }}/.migration-copy-complete"
+    state: touch
+    mode: "0644"
+
+- name: Pull Docker images for migration
+  command: docker compose pull
+  args:
+    chdir: "{{ mastodon_compose_dir }}"
+
+- name: Start Docker data services for migration
+  command: docker compose up -d db redis
+  args:
+    chdir: "{{ mastodon_compose_dir }}"
+  when:
+    - mastodon_postgres_enabled | bool
+    - mastodon_redis_enabled | bool
+
+- name: Start Docker database for migration
+  command: docker compose up -d db
+  args:
+    chdir: "{{ mastodon_compose_dir }}"
+  when:
+    - mastodon_postgres_enabled | bool
+    - not (mastodon_redis_enabled | bool)
+
+- name: Wait for Docker PostgreSQL
+  command: docker compose exec -T db pg_isready -U mastodon -d mastodon
+  args:
+    chdir: "{{ mastodon_compose_dir }}"
+  register: mastodon_postgres_ready
+  retries: 30
+  delay: 2
+  until: mastodon_postgres_ready.rc == 0
+  changed_when: false
+  when: mastodon_postgres_enabled | bool
+
+- name: Restore native database into Docker PostgreSQL
+  shell: docker compose exec -T db pg_restore --clean --if-exists --no-owner --no-acl -U mastodon -d mastodon < "{{ mastodon_backup_dir }}/mastodon-native.dump"
+  args:
+    chdir: "{{ mastodon_compose_dir }}"
+    creates: "{{ mastodon_backup_dir }}/.postgres-restore-complete"
+  when: mastodon_postgres_enabled | bool
+
+- name: Mark database restore complete
+  file:
+    path: "{{ mastodon_backup_dir }}/.postgres-restore-complete"
+    state: touch
+    mode: "0644"
+  when: mastodon_postgres_enabled | bool
+
+- name: Run database migrations after restore
+  command: docker compose run --rm web bundle exec rails db:migrate
+  args:
+    chdir: "{{ mastodon_compose_dir }}"
+  when: mastodon_postgres_enabled | bool
+
+- name: Mark native-to-Docker migration complete
+  copy:
+    dest: "{{ mastodon_migration_marker }}"
+    content: |
+      migrated_at={{ ansible_date_time.iso8601 }}
+      mastodon_version={{ mastodon_version }}
+    owner: root
+    group: root
+    mode: "0644"

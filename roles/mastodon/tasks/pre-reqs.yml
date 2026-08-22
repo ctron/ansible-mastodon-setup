@@ -1,129 +1,28 @@
 ---
 
-# add node repository key
-
-- name: add node repo key
-  apt_key:
-    url: https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key
-
-# register node repository
-
-- name: remove node repository (16.x)
-  apt_repository:
-    state: absent
-    repo: deb https://deb.nodesource.com/node_16.x jammy main
-
-- name: remove node repository (20.x, jammy)
-  apt_repository:
-    state: absent
-    repo: deb https://deb.nodesource.com/node_20.x jammy main
-
-- name: remove node repository (22.x)
-  apt_repository:
-    state: absent
-    repo: deb https://deb.nodesource.com/node_22.x nodistro main
-
-- name: add node repository (24.x)
-  apt_repository:
-    repo: deb https://deb.nodesource.com/node_24.x nodistro main
-
-# add yarn repository key
-
-- name: remove yarn repo key
-  apt_key:
-    id: "72ECF46A56B4AD39C907BBB71646B01B86E50310"
-    state: absent
-
-# register yarn repository
-
-- name: remove yarn repository
-  apt_repository:
-    repo: deb https://dl.yarnpkg.com/debian stable main
-    state: absent
-
-# add postgres repository key
-
-- name: add postgres repo key
-  apt_key:
-    url: https://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc
-
-# add postgres repository
-
-- name: remove postgres repository (jammy)
-  apt_repository:
-    state: absent
-    repo: deb https://apt.postgresql.org/pub/repos/apt jammy-pgdg main
-
-- name: add postgres repository (noble)
-  apt_repository:
-    repo: deb https://apt.postgresql.org/pub/repos/apt noble-pgdg main
-
-# update cache
-
-- name: update cache and distribution
+- name: Update apt cache and distribution
   apt:
     update_cache: true
     upgrade: dist
 
-# remove classic yarn
-- name: remove classic yarn
-  apt:
-    state: absent
-    pkg:
-      - yarn
-
-# install packages
-
-- name: Upgrade the OS (apt-get dist-upgrade)
-  ansible.builtin.apt:
-    upgrade: dist
-    update_cache: yes
-
-- name: install dependencies
+- name: Install Docker deployment dependencies
   apt:
     state: present
     pkg:
-    - python3-psycopg2
-    - curl
-    - imagemagick
-    - ffmpeg
-    - libpq-dev
-    - libxml2-dev
-    - libxslt1-dev
-    - file
-    - git-core
-    - g++
-    - libprotobuf-dev
-    - protobuf-compiler
-    - pkg-config
-    - nodejs
-    - gcc
-    - autoconf
-    - bison
-    - build-essential
-    - libssl-dev
-    - libyaml-dev
-    - libreadline6-dev
-    - zlib1g-dev
-    - libncurses5-dev
-    - libffi-dev
-    - libgdbm-dev
-    - nginx
-    - redis-server
-    - redis-tools
-    - postgresql
-    - postgresql-contrib
-    - certbot
-    - libidn11-dev
-    - libicu-dev
-    - libjemalloc-dev
-    - libvips-tools
+      - ca-certificates
+      - certbot
+      - curl
+      - docker.io
+      - docker-compose-v2
+      - nginx
+      - openssl
+      - postgresql-client
+      - python3-docker
+      - rsync
+      - ufw
 
-- name: enable corepack
-  ansible.builtin.command: corepack enable
-
-- name: remove classic yarn (npm)
-  community.general.npm:
-    name: yarn
-    global: true
-    state: absent
+- name: Enable Docker
+  service:
+    name: docker
+    enabled: true
+    state: started

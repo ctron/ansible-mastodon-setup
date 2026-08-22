@@ -3,32 +3,72 @@
 - name: Check for existing Mastodon checkout
   stat:
     path: /home/mastodon/live/.git
-  register: mastodon_checkout
+  register: mastodon_native_checkout
 
-- name: Determine whether this run is an upgrade
+- name: Check Docker migration marker
+  stat:
+    path: "{{ mastodon_migration_marker }}"
+  register: mastodon_docker_migration_marker
+
+- name: Check Docker PostgreSQL data directory
+  stat:
+    path: "{{ mastodon_postgres_dir }}"
+  register: mastodon_docker_postgres_dir
+
+- name: Check Docker PostgreSQL data
+  find:
+    paths: "{{ mastodon_postgres_dir }}"
+    patterns: PG_VERSION
+    file_type: file
+    recurse: true
+  register: mastodon_docker_postgres_data
+  when: mastodon_docker_postgres_dir.stat.exists
+
+- name: Determine Docker PostgreSQL data presence
   set_fact:
-    mastodon_is_upgrade: >-
-      {{ (mastodon_upgrade
-          if mastodon_upgrade is not none
-          else mastodon_checkout.stat.exists) | bool }}
+    mastodon_docker_postgres_data_exists: "{{ (mastodon_docker_postgres_data.matched | default(0) | int) > 0 }}"
+
+- name: Determine native-to-Docker migration state
+  set_fact:
+    mastodon_needs_native_to_docker_migration: >-
+      {{ mastodon_native_checkout.stat.exists
+         and (mastodon_force_native_to_docker_migration | bool
+              or not mastodon_docker_migration_marker.stat.exists) }}
+
+- name: Refuse ambiguous native-to-Docker migration state
+  fail:
+    msg: >-
+      Native Mastodon exists and Docker PostgreSQL data already exists, but
+      {{ mastodon_migration_marker }} is missing. Refusing to continue because
+      re-importing could overwrite data. Inspect {{ mastodon_compose_dir }} and
+      either create the marker manually after verification, clean the partial
+      Docker state, or set mastodon_force_native_to_docker_migration=true.
+  when:
+    - mastodon_native_checkout.stat.exists
+    - mastodon_postgres_enabled | bool
+    - mastodon_docker_postgres_data_exists | bool
+    - not mastodon_docker_migration_marker.stat.exists
+    - not (mastodon_force_native_to_docker_migration | bool)
 
 - name: Install pre-requisites
   import_tasks: pre-reqs.yml
 
-- name: Create user
-  import_tasks: user.yml
-
-- name: Ruby
-  import_tasks: ruby.yml
-
-- name: Database
-  import_tasks: database.yml
+- name: Docker configuration
+  import_tasks: docker.yml
 
 - name: NGINX
   import_tasks: nginx.yml
 
-- name: Mastodon
-  import_tasks: mastodon.yml
+- name: Native to Docker migration
+  import_tasks: migrate-native-to-docker.yml
+  when: mastodon_needs_native_to_docker_migration | bool
+
+- name: Mastodon Docker stack
+  import_tasks: mastodon-docker.yml
 
 - name: Firewall
   import_tasks: firewall.yml
+
+- name: Cleanup native Mastodon deployment
+  import_tasks: cleanup-native.yml
+  when: mastodon_cleanup_native_after_migration | bool

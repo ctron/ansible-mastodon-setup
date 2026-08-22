@@ -1,0 +1,44 @@
+---
+
+- name: Refuse native cleanup before Docker migration is marked complete
+  fail:
+    msg: >-
+      Refusing native cleanup because {{ mastodon_migration_marker }} does not
+      exist. Run the Docker migration first and verify the Docker deployment
+      before setting mastodon_cleanup_native_after_migration=true.
+  when: not mastodon_docker_migration_marker.stat.exists
+
+- name: Remove native Mastodon cron jobs
+  cron:
+    name: "{{ item }}"
+    user: mastodon
+    state: absent
+  loop:
+    - cleanup_mastodon
+    - mastodon_media_remove
+    - mastodon_prune_profiles
+    - mastodon_preview_cards_remove
+
+- name: Stop and disable native Mastodon services
+  service:
+    name: "{{ item }}"
+    state: stopped
+    enabled: false
+  loop:
+    - mastodon-sidekiq
+    - mastodon-streaming
+    - mastodon-web
+  failed_when: false
+
+- name: Remove native Mastodon systemd unit files
+  file:
+    path: "/etc/systemd/system/{{ item }}.service"
+    state: absent
+  loop:
+    - mastodon-sidekiq
+    - mastodon-streaming
+    - mastodon-web
+
+- name: Reload systemd after native cleanup
+  systemd:
+    daemon_reload: true

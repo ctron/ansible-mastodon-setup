@@ -13,6 +13,11 @@
     src: mastodon.conf.j2
     dest: /etc/nginx/sites-available/mastodon.conf
 
+- name: Check letsencrypt certificate
+  stat:
+    path: /etc/letsencrypt/live/{{ mastodon_public_hostname }}/fullchain.pem
+  register: letsencrypt_certificate
+
 - name: Enable config
   file:
     src: /etc/nginx/sites-available/mastodon.conf
@@ -28,26 +33,26 @@
   service:
     name: nginx
     state: stopped
-  when: not mastodon_is_upgrade
+  when: not letsencrypt_certificate.stat.exists
 
 - name: Create letsencrypt certificate
   shell: certbot certonly -n --standalone -m {{ letsencrypt_email }} --agree-tos -d {{ mastodon_public_hostname }}
   args:
     creates: /etc/letsencrypt/live/{{ mastodon_public_hostname }}
-  when: not mastodon_is_upgrade
+  when: not letsencrypt_certificate.stat.exists
 
 - name: Start nginx again
   service:
     name: nginx
     state: started
-  when: not mastodon_is_upgrade
+  when: not letsencrypt_certificate.stat.exists
 
 - name: Disable (legacy) LE cron job
   # Is done now by a systemd timer, installed using the certbot package
   cron:
     name: renew_letsencrypt
     special_time: weekly
-    job: letsencrypt --renew certonly -n --webroot -w /home/mastodon/live/public -m {{ letsencrypt_email }} --agree-tos -d {{ mastodon_public_hostname }} && systemctl reload nginx
+    job: letsencrypt --renew certonly -n --webroot -w {{ mastodon_public_dir }} -m {{ letsencrypt_email }} --agree-tos -d {{ mastodon_public_hostname }} && systemctl reload nginx
     state: absent # remove legacy job
 
 - name: Add certbot post hook

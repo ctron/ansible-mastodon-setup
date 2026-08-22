@@ -1,0 +1,95 @@
+services:
+{% if mastodon_postgres_enabled | bool %}
+  db:
+    image: {{ mastodon_postgres_image }}
+    restart: unless-stopped
+    shm_size: 256mb
+    environment:
+      POSTGRES_DB: mastodon
+      POSTGRES_USER: mastodon
+{% if mastodon_postgres_password | length > 0 %}
+      POSTGRES_PASSWORD: "{{ mastodon_postgres_password }}"
+{% else %}
+      POSTGRES_HOST_AUTH_METHOD: trust
+{% endif %}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mastodon -d mastodon"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - {{ mastodon_postgres_dir }}:/var/lib/postgresql
+
+{% endif %}
+{% if mastodon_redis_enabled | bool %}
+  redis:
+    image: {{ mastodon_redis_image }}
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - {{ mastodon_redis_dir }}:/data
+
+{% endif %}
+  web:
+    image: {{ mastodon_image }}
+    restart: unless-stopped
+    env_file: .env.production
+    command: bundle exec puma -C config/puma.rb
+    ports:
+      - "127.0.0.1:3000:3000"
+{% if mastodon_postgres_enabled | bool or mastodon_redis_enabled | bool %}
+    depends_on:
+{% if mastodon_postgres_enabled | bool %}
+      db:
+        condition: service_healthy
+{% endif %}
+{% if mastodon_redis_enabled | bool %}
+      redis:
+        condition: service_started
+{% endif %}
+{% endif %}
+    volumes:
+      - {{ mastodon_system_dir }}:/mastodon/public/system
+
+  streaming:
+    image: {{ mastodon_streaming_image }}
+    restart: unless-stopped
+    env_file: .env.production
+    command: node ./streaming/index.js
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s --noproxy localhost localhost:4000/api/v1/streaming/health | grep -q 'OK' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "127.0.0.1:4000:4000"
+{% if mastodon_postgres_enabled | bool or mastodon_redis_enabled | bool %}
+    depends_on:
+{% if mastodon_postgres_enabled | bool %}
+      db:
+        condition: service_healthy
+{% endif %}
+{% if mastodon_redis_enabled | bool %}
+      redis:
+        condition: service_started
+{% endif %}
+{% endif %}
+
+  sidekiq:
+    image: {{ mastodon_image }}
+    restart: unless-stopped
+    env_file: .env.production
+    command: bundle exec sidekiq
+{% if mastodon_postgres_enabled | bool or mastodon_redis_enabled | bool %}
+    depends_on:
+{% if mastodon_postgres_enabled | bool %}
+      db:
+        condition: service_healthy
+{% endif %}
+{% if mastodon_redis_enabled | bool %}
+      redis:
+        condition: service_started
+{% endif %}
+{% endif %}
+    volumes:
+      - {{ mastodon_system_dir }}:/mastodon/public/system

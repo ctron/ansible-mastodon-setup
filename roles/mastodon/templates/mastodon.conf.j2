@@ -17,7 +17,7 @@ server {
   listen 80;
   listen [::]:80;
   server_name {{ mastodon_public_hostname }};
-  root /home/mastodon/live/public;
+  root {{ mastodon_public_dir }};
   location /.well-known/acme-challenge/ { allow all; }
   location / { return 301 https://$host$request_uri; }
 }
@@ -42,7 +42,7 @@ server {
   sendfile             on;
   client_max_body_size 80m;
 
-  root /home/mastodon/live/public;
+  root {{ mastodon_public_dir }};
 
   gzip on;
   gzip_disable "msie6";
@@ -57,54 +57,6 @@ server {
 
   location / {
     try_files $uri @proxy;
-  }
-
-  location = /sw.js {
-    add_header Cache-Control "public, max-age=604800, must-revalidate";
-    add_header Strict-Transport-Security "max-age=63072000; includeSubDomains";
-    try_files $uri =404;
-  }
-
-  location ~ ^/assets/ {
-    add_header Cache-Control "public, max-age=2419200, must-revalidate";
-    add_header Strict-Transport-Security "max-age=63072000; includeSubDomains";
-    try_files $uri =404;
-  }
-
-  location ~ ^/avatars/ {
-    add_header Cache-Control "public, max-age=2419200, must-revalidate";
-    add_header Strict-Transport-Security "max-age=63072000; includeSubDomains";
-    try_files $uri =404;
-  }
-
-  location ~ ^/emoji/ {
-    add_header Cache-Control "public, max-age=2419200, must-revalidate";
-    add_header Strict-Transport-Security "max-age=63072000; includeSubDomains";
-    try_files $uri =404;
-  }
-
-  location ~ ^/headers/ {
-    add_header Cache-Control "public, max-age=2419200, must-revalidate";
-    add_header Strict-Transport-Security "max-age=63072000; includeSubDomains";
-    try_files $uri =404;
-  }
-
-  location ~ ^/packs/ {
-    add_header Cache-Control "public, max-age=2419200, must-revalidate";
-    add_header Strict-Transport-Security "max-age=63072000; includeSubDomains";
-    try_files $uri =404;
-  }
-
-  location ~ ^/shortcuts/ {
-    add_header Cache-Control "public, max-age=2419200, must-revalidate";
-    add_header Strict-Transport-Security "max-age=63072000; includeSubDomains";
-    try_files $uri =404;
-  }
-
-  location ~ ^/sounds/ {
-    add_header Cache-Control "public, max-age=2419200, must-revalidate";
-    add_header Strict-Transport-Security "max-age=63072000; includeSubDomains";
-    try_files $uri =404;
   }
 
   location ~ ^/system/ {

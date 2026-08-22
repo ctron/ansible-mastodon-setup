@@ -1,10 +1,29 @@
-mastodon_repo: https://github.com/mastodon/mastodon.git
-mastodon_version: v4.6.2
+mastodon_version: v4.6.4
 mastodon_email_sender: "mastodon@{{mastodon_domain}}"
 mastodon_smtp_user: "{{mastodon_email_sender}}"
-# Auto-detect upgrades from an existing checkout unless explicitly overridden.
-mastodon_upgrade:
 
-# must be aligned with the version required by mastodon.
-# Check: /.ruby-version in git
-ruby_version: 4.0.5
+mastodon_compose_dir: /opt/mastodon
+mastodon_public_dir: "{{ mastodon_compose_dir }}/public"
+mastodon_system_dir: "{{ mastodon_public_dir }}/system"
+mastodon_postgres_dir: "{{ mastodon_compose_dir }}/postgres"
+mastodon_redis_dir: "{{ mastodon_compose_dir }}/redis"
+mastodon_backup_dir: "{{ mastodon_compose_dir }}/backups"
+mastodon_migration_marker: "{{ mastodon_compose_dir }}/.native-to-docker-migrated"
+
+mastodon_image: "ghcr.io/mastodon/mastodon:{{ mastodon_version }}"
+mastodon_streaming_image: "ghcr.io/mastodon/mastodon-streaming:{{ mastodon_version }}"
+mastodon_postgres_image: postgres:18
+mastodon_redis_image: redis:8-alpine
+
+mastodon_postgres_enabled: true
+mastodon_redis_enabled: true
+mastodon_postgres_password: ""
+
+mastodon_force_native_to_docker_migration: false
+mastodon_cleanup_native_after_migration: false
+mastodon_reuse_native_database_dump: false
+
+mastodon_container_uid: "991"
+mastodon_container_gid: "991"
+mastodon_redis_uid: "999"
+mastodon_redis_gid: "999"
