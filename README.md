@@ -45,11 +45,11 @@ mastodon_smtp_password: bar-foo
 
 letsencrypt_email: my@domain.org
 
-# generate with: docker run --rm -ti ghcr.io/mastodon/mastodon:v4.6.2 bundle exec rake secret
+# generate with: docker run --rm -ti ghcr.io/mastodon/mastodon:v4.7.0 bundle exec rake secret
 secret_key_base: 1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
-# generate with: docker run --rm -ti ghcr.io/mastodon/mastodon:v4.6.2 bundle exec rake secret
+# generate with: docker run --rm -ti ghcr.io/mastodon/mastodon:v4.7.0 bundle exec rake secret
 otp_secret: 1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
-# generate both with: docker run --rm -ti ghcr.io/mastodon/mastodon:v4.6.2 bundle exec rake mastodon:webpush:generate_vapid_key
+# generate both with: docker run --rm -ti ghcr.io/mastodon/mastodon:v4.7.0 bundle exec rake mastodon:webpush:generate_vapid_key
 vapid_private_key: ...
 vapid_public_key: ...
 
@@ -149,5 +149,7 @@ docker compose run --rm web bin/tootctl accounts create \
     ansible-playbook -u root -i ../inventory.ini --extra-vars=@../extra-vars.yaml install.yml
     ```
 
-The playbook pulls the configured images, runs database migrations, and starts
-the Compose stack.
+Back up the database before upgrading. Mastodon 4.7 includes unusually long
+database migrations, which can take up to a few hours on very large servers.
+The playbook pulls the configured images, runs pre-deployment migrations,
+reconciles the Compose stack, and then runs post-deployment migrations.

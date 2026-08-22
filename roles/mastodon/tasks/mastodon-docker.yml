@@ -5,18 +5,26 @@
   args:
     chdir: "{{ mastodon_compose_dir }}"
 
-- name: Run Mastodon database migrations
-  command: docker compose run --rm web bundle exec rails db:migrate
+- name: Run Mastodon pre-deployment database migrations
+  command: docker compose run --rm -e SKIP_POST_DEPLOYMENT_MIGRATIONS=true web bundle exec rails db:migrate
   args:
     chdir: "{{ mastodon_compose_dir }}"
   when: mastodon_postgres_enabled | bool
-  register: mastodon_db_migrate
-  changed_when: "'Migrating' in mastodon_db_migrate.stdout or 'migrated' in mastodon_db_migrate.stdout"
+  register: mastodon_pre_deployment_db_migrate
+  changed_when: "'Migrating' in mastodon_pre_deployment_db_migrate.stdout or 'migrated' in mastodon_pre_deployment_db_migrate.stdout"
 
 - name: Start Mastodon Docker stack
   community.docker.docker_compose_v2:
     project_src: "{{ mastodon_compose_dir }}"
     state: present
+
+- name: Run Mastodon post-deployment database migrations
+  command: docker compose run --rm web bundle exec rails db:migrate
+  args:
+    chdir: "{{ mastodon_compose_dir }}"
+  when: mastodon_postgres_enabled | bool
+  register: mastodon_post_deployment_db_migrate
+  changed_when: "'Migrating' in mastodon_post_deployment_db_migrate.stdout or 'migrated' in mastodon_post_deployment_db_migrate.stdout"
 
 - name: Mastodon cleanup job (media remove)
   cron:
