@@ -45,11 +45,11 @@ mastodon_smtp_password: bar-foo
 
 letsencrypt_email: my@domain.org
 
-# generate with: docker run --rm -ti ghcr.io/mastodon/mastodon:v4.7.1 bundle exec rake secret
+# generate with: docker run --rm -ti ghcr.io/mastodon/mastodon:v4.7.2 bundle exec rake secret
 secret_key_base: 1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
-# generate with: docker run --rm -ti ghcr.io/mastodon/mastodon:v4.7.1 bundle exec rake secret
+# generate with: docker run --rm -ti ghcr.io/mastodon/mastodon:v4.7.2 bundle exec rake secret
 otp_secret: 1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
-# generate both with: docker run --rm -ti ghcr.io/mastodon/mastodon:v4.7.1 bundle exec rake mastodon:webpush:generate_vapid_key
+# generate both with: docker run --rm -ti ghcr.io/mastodon/mastodon:v4.7.2 bundle exec rake mastodon:webpush:generate_vapid_key
 vapid_private_key: ...
 vapid_public_key: ...
 

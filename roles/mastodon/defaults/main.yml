@@ -1,4 +1,4 @@
-mastodon_version: v4.7.1
+mastodon_version: v4.7.2
 mastodon_email_sender: "mastodon@{{mastodon_domain}}"
 mastodon_smtp_user: "{{mastodon_email_sender}}"
 
