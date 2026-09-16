@@ -1,3 +1,4 @@
 /extra-vars.yml
 .codex
 *.retry
+/.serena/
